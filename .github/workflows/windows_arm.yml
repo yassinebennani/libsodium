@@ -1,0 +1,43 @@
+name: Windows Arm64 Build
+
+on:
+  push:
+    branches: [master, stable, next]
+  pull_request:
+    branches: [master, stable, next]
+
+  workflow_dispatch:
+
+jobs:
+  zig:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update packages list
+        run: sudo apt-get update
+
+      - name: Install Zig
+        uses: goto-bus-stop/setup-zig@d866436887ad1b24590684f9d00480376663dd36
+        with:
+          version: master
+
+      - name: Autogen
+        run: ./autogen.sh -s
+
+      - name: Compilation with zig
+        run: |
+          zig build
+          zig build -Doptimize=ReleaseFast -Dtarget=aarch64-windows
+          ls -l zig-out/lib
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: zig-windows-arm64-build
+          path: zig-out/lib/
+
+      - name: Cleanup
+        run: rm -fr zig-cache zig-out
+
+  
