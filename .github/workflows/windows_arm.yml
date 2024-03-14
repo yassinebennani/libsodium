@@ -27,7 +27,6 @@ jobs:
 
       - name: Compilation with zig
         run: |
-          zig build
           zig build -Doptimize=ReleaseFast -Dtarget=aarch64-windows
           ls -l zig-out/lib
 
